@@ -25,6 +25,7 @@ public class UsageStatsListAdapter extends RecyclerView.Adapter<UsageStatsListAd
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final ImageView appIcon;
         public final TextView packageName;
+        public final TextView appName;
         public final TextView statsRange;
         public final TextView lastTimeUsed;
         public final TextView foregroundDuration;
@@ -33,6 +34,7 @@ public class UsageStatsListAdapter extends RecyclerView.Adapter<UsageStatsListAd
             super(v);
             appIcon = v.findViewById(R.id.app_icon);
             packageName = v.findViewById(R.id.package_name);
+            appName = v.findViewById(R.id.app_name);
             lastTimeUsed = v.findViewById(R.id.last_time_used);
             statsRange = v.findViewById(R.id.stats_range);
             foregroundDuration = v.findViewById(R.id.foreground_duration);
@@ -57,6 +59,7 @@ public class UsageStatsListAdapter extends RecyclerView.Adapter<UsageStatsListAd
         String packageName = usageStats.getPackageName();
         viewHolder.appIcon.setImageDrawable(getAppIcon(packageName));
         viewHolder.packageName.setText(packageName);
+        viewHolder.appName.setText(getAppName(packageName));
         viewHolder.statsRange.setText(String.format(
                 "%s - %s",
                 formatTime(usageStats.getFirstTimeStamp()),
@@ -79,6 +82,14 @@ public class UsageStatsListAdapter extends RecyclerView.Adapter<UsageStatsListAd
     private Drawable getAppIcon(String packageName) {
         try {
             return packageManager.getApplicationIcon(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return null;
+    }
+
+    private CharSequence getAppName(String packageName) {
+        try {
+            return packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0));
         } catch (PackageManager.NameNotFoundException e) {
         }
         return null;
